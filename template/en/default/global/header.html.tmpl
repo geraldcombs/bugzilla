@@ -21,6 +21,7 @@
   # message: string. A message to display to the user. May contain HTML.
   # atomlink: Atom link URL, May contain HTML
   # generate_api_token: generate a token which can be used to make authenticated webservice calls
+  # delayed_indexing: generate a <meta name="robots" content="noindex, nofollow"> header, e.g. for new bugs.
   #%]
 
 [% IF message %]
@@ -41,6 +42,7 @@
   jquery_css = []
   generate_api_token = 0
   favicon_url = "images/favicon.ico"
+  delayed_indexing = 0
 %]
 
 [% IF NOT no_yui %]
@@ -107,6 +109,10 @@
     [% Hook.process("start") %]
     <title>[% title %]</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    [% IF delayed_indexing %]
+      <meta name="robots" content="noindex, nofollow">
+    [% END %]
 
     [% IF NOT no_yui %]
       [% SET yui = yui_resolve_deps(yui, yui_deps) %]
@@ -177,7 +183,7 @@
           #%]
         function unhide_language_selector() {
             $('#lang_links_container').removeClass('bz_default_hidden');
-        } 
+        }
         $(document).ready(unhide_language_selector);
 
         // This sets the default parameters for all calendar fields.
@@ -190,9 +196,9 @@
             monthNames: [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ]
         });
 
-        [%# Make some Bugzilla information available to all scripts. 
+        [%# Make some Bugzilla information available to all scripts.
           # We don't import every parameter and constant because we
-          # don't want to add a lot of uncached JS to every page. 
+          # don't want to add a lot of uncached JS to every page.
           #%]
         var BUGZILLA = {
             param: {
@@ -250,8 +256,8 @@
 
     [%# this puts the live bookmark up on firefox for the Atom feed %]
     [% IF atomlink %]
-       <link rel="alternate" 
-             type="application/atom+xml" title="Atom feed" 
+       <link rel="alternate"
+             type="application/atom+xml" title="Atom feed"
              href="[% atomlink FILTER html %]">
     [% END %]
 
